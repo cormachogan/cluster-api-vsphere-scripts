@@ -1,45 +1,43 @@
+# Cluster API on vSphere #
+
 These are the setup steps to use ClusterAPI (capi) on vSphere. We start off with a simple KIND cluster, but Kind and Docker need to be pre-installed.
 
 `$ kind create cluster`
 
 Next, add the ClusterAPI bits to the KIND cluster. This requires a bunch of ENV vars to be setup as wel as the clusterctl binary installed
 
-`./mgmt-clusterctl-vsphere`
-Fetching providers
-Skipping installing cert-manager as it is already installed
-Installing Provider="cluster-api" Version="v0.3.17" TargetNamespace="capi-system"
-Installing Provider="bootstrap-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-bootstrap-system"
-Installing Provider="control-plane-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-control-plane-system"
-Installing Provider="infrastructure-vsphere" Version="v0.7.7" TargetNamespace="capv-system"
-
-Your management cluster has been initialized successfully!
-
-You can now create your first workload cluster by running the following:
-
-  clusterctl config cluster [name] --kubernetes-version [version] | kubectl apply -f -
-
+> ./mgmt-clusterctl-vsphere
+> Fetching providers
+> Skipping installing cert-manager as it is already installed
+> Installing Provider="cluster-api" Version="v0.3.17" TargetNamespace="capi-system"
+> Installing Provider="bootstrap-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-bootstrap-system"
+> Installing Provider="control-plane-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-control-plane-system"
+> Installing Provider="infrastructure-vsphere" Version="v0.7.7" TargetNamespace="capv-system"
+>
+> Your management cluster has been initialized successfully!
+> 
+> You can now create your first workload cluster by running the following:
+>
+>  clusterctl config cluster [name] --kubernetes-version [version] | kubectl apply -f -
 
 Now you can create a workload cluster. Again, I have scripted it with loads of env vars
 
-`./wkld-clusterctl-vsphere`
-
-New clusterctl version available: v0.3.16 -> v0.3.17
-https://github.com/kubernetes-sigs/cluster-api/releases/tag/v0.3.17
-cluster.cluster.x-k8s.io/vsphere-quickstart created
-vspherecluster.infrastructure.cluster.x-k8s.io/vsphere-quickstart created
-vspheremachinetemplate.infrastructure.cluster.x-k8s.io/vsphere-quickstart created
-kubeadmcontrolplane.controlplane.cluster.x-k8s.io/vsphere-quickstart created
-kubeadmconfigtemplate.bootstrap.cluster.x-k8s.io/vsphere-quickstart-md-0 created
-machinedeployment.cluster.x-k8s.io/vsphere-quickstart-md-0 created
-clusterresourceset.addons.cluster.x-k8s.io/vsphere-quickstart-crs-0 created
-secret/vsphere-csi-controller created
-configmap/vsphere-csi-controller-role created
-configmap/vsphere-csi-controller-binding created
-secret/csi-vsphere-config created
-configmap/csi.vsphere.vmware.com created
-configmap/vsphere-csi-node created
-configmap/vsphere-csi-controller created
-configmap/internal-feature-states.csi.vsphere.vmware.com created
+> ./wkld-clusterctl-vsphere
+> cluster.cluster.x-k8s.io/vsphere-quickstart created
+> vspherecluster.infrastructure.cluster.x-k8s.io/vsphere-quickstart created
+> vspheremachinetemplate.infrastructure.cluster.x-k8s.io/vsphere-quickstart created
+> kubeadmcontrolplane.controlplane.cluster.x-k8s.io/vsphere-quickstart created
+> kubeadmconfigtemplate.bootstrap.cluster.x-k8s.io/vsphere-quickstart-md-0 created
+> machinedeployment.cluster.x-k8s.io/vsphere-quickstart-md-0 created
+> clusterresourceset.addons.cluster.x-k8s.io/vsphere-quickstart-crs-0 created
+> secret/vsphere-csi-controller created
+> configmap/vsphere-csi-controller-role created
+> configmap/vsphere-csi-controller-binding created
+> secret/csi-vsphere-config created
+> configmap/csi.vsphere.vmware.com created
+> configmap/vsphere-csi-node created
+> configmap/vsphere-csi-controller created
+> configmap/internal-feature-states.csi.vsphere.vmware.com created
 
 
 At this point, you should see the VMs to back the K8s nodes be provisioned in vSphere. There will also be a cluster manifest created called cluster.yaml which can be used to delete the cluster. Note that I had to create the folder in the vSphere inventory for this to happen (I think).
@@ -49,35 +47,35 @@ Remember to apply a CNI or the nodes will not become READY. To retrieve the KUBE
 `$ clusterctl get kubeconfig vsphere-quickstart > quickstart-kubeconfig`
 
 
-`$ kubectl config get-contexts --kubeconfig quickstart-kubeconfig`
-CURRENT   NAME                                          CLUSTER              AUTHINFO                   NAMESPACE
-*         vsphere-quickstart-admin@vsphere-quickstart   vsphere-quickstart   vsphere-quickstart-admin
+> $ kubectl config get-contexts --kubeconfig quickstart-kubeconfig
+> CURRENT   NAME                                          CLUSTER              AUTHINFO                   NAMESPACE
+> *         vsphere-quickstart-admin@vsphere-quickstart   vsphere-quickstart   vsphere-quickstart-admin
 
 
 `$ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml --kubeconfig quickstart-kubeconfig`
 
 
-`$ kubectl get nodes --kubeconfig quickstart-kubeconfig  -o wide`
-NAME                                      STATUS   ROLES    AGE     VERSION            INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                 KERNEL-VERSION   CONTAINER-RUNTIME
-vsphere-quickstart-795rm                  Ready    master   9m26s   v1.18.6+vmware.1   10.27.51.25   10.27.51.25   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
-vsphere-quickstart-md-0-57ff99b55-jtpg7   Ready    <none>   7m15s   v1.18.6+vmware.1   10.27.51.29   10.27.51.29   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
-vsphere-quickstart-md-0-57ff99b55-q9xd4   Ready    <none>   7m19s   v1.18.6+vmware.1   10.27.51.42   10.27.51.42   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
-vsphere-quickstart-md-0-57ff99b55-xd665   Ready    <none>   7m13s   v1.18.6+vmware.1   10.27.51.41   10.27.51.41   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
+> $ kubectl get nodes --kubeconfig quickstart-kubeconfig  -o wide
+> NAME                                      STATUS   ROLES    AGE     VERSION            INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                 KERNEL-VERSION   CONTAINER-RUNTIME
+> vsphere-quickstart-795rm                  Ready    master   9m26s   v1.18.6+vmware.1   10.27.51.25   10.27.51.25   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
+> vsphere-quickstart-md-0-57ff99b55-jtpg7   Ready    <none>   7m15s   v1.18.6+vmware.1   10.27.51.29   10.27.51.29   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
+> vsphere-quickstart-md-0-57ff99b55-q9xd4   Ready    <none>   7m19s   v1.18.6+vmware.1   10.27.51.42   10.27.51.42   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
+> vsphere-quickstart-md-0-57ff99b55-xd665   Ready    <none>   7m13s   v1.18.6+vmware.1   10.27.51.41   10.27.51.41   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
 
 
 Cleanup. Start with workload, then CAPI stuff, then delete the KinD cluster
 
 
-`$ kubectl delete cluster vsphere-quickstart`
-cluster.cluster.x-k8s.io "vsphere-quickstart" deleted
+> $ kubectl delete cluster vsphere-quickstart
+> cluster.cluster.x-k8s.io "vsphere-quickstart" deleted
 
 
-`$ clusterctl delete --all`
-Deleting Provider="bootstrap-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-bootstrap-system"
-Deleting Provider="control-plane-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-control-plane-system"
-Deleting Provider="cluster-api" Version="v0.3.17" TargetNamespace="capi-system"
-Deleting Provider="infrastructure-vsphere" Version="v0.7.7" TargetNamespace="capv-system"
+> $ clusterctl delete --all
+> Deleting Provider="bootstrap-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-bootstrap-system"
+> Deleting Provider="control-plane-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-control-plane-system"
+> Deleting Provider="cluster-api" Version="v0.3.17" TargetNamespace="capi-system"
+> Deleting Provider="infrastructure-vsphere" Version="v0.7.7" TargetNamespace="capv-system"
 
 
-`$ kind delete cluster`
-Deleting cluster "kind" ...
+> $ kind delete cluster
+> Deleting cluster "kind" ...
