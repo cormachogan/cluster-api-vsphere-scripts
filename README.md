@@ -1,19 +1,10 @@
-#
-#-- These are the setup steps to use ClusterAPI (capi) on vSphere
-#
+These are the setup steps to use ClusterAPI (capi) on vSphere. We start off with a simple KIND cluster, but Kind and Docker need to be pre-installed.
 
-#
-#-- We start off with a simple KIND cluster, but Kind and Docker need to be pre-installed
-#
+`$ kind create cluster`
 
-kind create cluster
+Next, add the ClusterAPI bits to the KIND cluster. This requires a bunch of ENV vars to be setup as wel as the clusterctl binary installed
 
-
-#
-#-- Next, add the ClusterAPI bits to the KIND cluster. This requires a bunch of ENV vars to be setup as wel as the clusterctl binary installed
-#
-
-./mgmt-clusterctl-vsphere
+`./mgmt-clusterctl-vsphere
 Fetching providers
 Skipping installing cert-manager as it is already installed
 Installing Provider="cluster-api" Version="v0.3.17" TargetNamespace="capi-system"
@@ -25,18 +16,12 @@ Your management cluster has been initialized successfully!
 
 You can now create your first workload cluster by running the following:
 
-  clusterctl config cluster [name] --kubernetes-version [version] | kubectl apply -f -
+  clusterctl config cluster [name] --kubernetes-version [version] | kubectl apply -f -`
 
 
-New clusterctl version available: v0.3.16 -> v0.3.17
-https://github.com/kubernetes-sigs/cluster-api/releases/tag/v0.3.17
+Now you can create a workload cluster. Again, I have scripted it with loads of env vars
 
-
-#
-#-- Now you can create a workload cluster. Again, I have scripted it with loads of env vars
-#
-
-./wkld-clusterctl-vsphere
+`./wkld-clusterctl-vsphere
 
 New clusterctl version available: v0.3.16 -> v0.3.17
 https://github.com/kubernetes-sigs/cluster-api/releases/tag/v0.3.17
@@ -54,25 +39,14 @@ secret/csi-vsphere-config created
 configmap/csi.vsphere.vmware.com created
 configmap/vsphere-csi-node created
 configmap/vsphere-csi-controller created
-configmap/internal-feature-states.csi.vsphere.vmware.com created
-
-#
-#-- At this point, you should see the VMs to back the K8s nodes be provisioned in vSphere. 
-#-- There will also be a cluster manifest created called cluster.yaml which can be used to delete the cluster.
-#-- Note that I had to create the folder in the vSphere inventory for this to happen (I think)
-#
+configmap/internal-feature-states.csi.vsphere.vmware.com created`
 
 
-#
-#-- CNI
-#
-#-- Remember to apply a CNI or the nodes will not become READY. To retrieve the KUBECONFIG, do the following:
-#
+At this point, you should see the VMs to back the K8s nodes be provisioned in vSphere. There will also be a cluster manifest created called cluster.yaml which can be used to delete the cluster. Note that I had to create the folder in the vSphere inventory for this to happen (I think).
 
-$ clusterctl get kubeconfig vsphere-quickstart > quickstart-kubeconfig
+Remember to apply a CNI or the nodes will not become READY. To retrieve the KUBECONFIG, do the following:
 
-New clusterctl version available: v0.3.16 -> v0.3.17
-https://github.com/kubernetes-sigs/cluster-api/releases/tag/v0.3.17
+`$ clusterctl get kubeconfig vsphere-quickstart > quickstart-kubeconfig
 
 
 $ kubectl config get-contexts --kubeconfig quickstart-kubeconfig
@@ -89,13 +63,11 @@ vsphere-quickstart-795rm                  Ready    master   9m26s   v1.18.6+vmwa
 vsphere-quickstart-md-0-57ff99b55-jtpg7   Ready    <none>   7m15s   v1.18.6+vmware.1   10.27.51.29   10.27.51.29   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
 vsphere-quickstart-md-0-57ff99b55-q9xd4   Ready    <none>   7m19s   v1.18.6+vmware.1   10.27.51.42   10.27.51.42   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
 vsphere-quickstart-md-0-57ff99b55-xd665   Ready    <none>   7m13s   v1.18.6+vmware.1   10.27.51.41   10.27.51.41   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
+`
 
+Cleanup. Start with workload, then CAPI stuff, then delete the KinD cluster
 
-#
-#-- Cleanup. Start with workload, then CAPI stuff, then delete the KinD cluster
-#
-
-
+`
 $ kubectl delete cluster vsphere-quickstart
 cluster.cluster.x-k8s.io "vsphere-quickstart" deleted
 
@@ -106,9 +78,7 @@ Deleting Provider="control-plane-kubeadm" Version="v0.3.17" TargetNamespace="cap
 Deleting Provider="cluster-api" Version="v0.3.17" TargetNamespace="capi-system"
 Deleting Provider="infrastructure-vsphere" Version="v0.7.7" TargetNamespace="capv-system"
 
-New clusterctl version available: v0.3.16 -> v0.3.17
-https://github.com/kubernetes-sigs/cluster-api/releases/tag/v0.3.17
-
 
 $ kind delete cluster
 Deleting cluster "kind" ...
+`
