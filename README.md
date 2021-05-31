@@ -1,10 +1,10 @@
 # Cluster API on vSphere #
 
-These are the setup steps to use ClusterAPI (capi) on vSphere. We start off with a simple KIND cluster, but Kind and Docker need to be pre-installed.
+These are the setup steps to use ClusterAPI (capi) on vSphere. We start off with a simple *kind* cluster, therefore both _kind_ and _Docker_ need to be pre-installed.
 
 `$ kind create cluster`
 
-Next, add the ClusterAPI bits to the KIND cluster. This requires a bunch of ENV vars to be setup as wel as the clusterctl binary installed
+This will create a simple Kubernetes cluster using containers. Next, download the *clusterctl* binary and use it to initialize the kind cluster for ClusterAPO. This _init_ steps adds the ClusterAPI bits to the kind cluster. This requires a bunch of ENV vars to be setup as wel as the clusterctl binary installed. See [mgmt_clusterctl_vsphere](./mgmt-clusterctl-vsphere).
 
 ```yaml
 ./mgmt-clusterctl-vsphere
@@ -22,7 +22,7 @@ You can now create your first workload cluster by running the following:
   clusterctl config cluster [name] --kubernetes-version [version] | kubectl apply -f -
 ```
 
-Now you can create a workload cluster. Again, I have scripted it with loads of env vars
+Now you can create a workload cluster. Again, I have scripted it with loads of env vars. See [wkld_clusterctl_vsphere](./wkld-clusterctl-vsphere).
 
 ```yaml
 ./wkld-clusterctl-vsphere
@@ -45,7 +45,10 @@ configmap/internal-feature-states.csi.vsphere.vmware.com created
 
 At this point, you should see the VMs to back the K8s nodes be provisioned in vSphere. There will also be a cluster manifest created called cluster.yaml which can be used to delete the cluster. Note that I had to create the folder in the vSphere inventory for this to happen (I think).
 
-Remember to apply a CNI or the nodes will not become READY. To retrieve the KUBECONFIG, do the following:
+
+## KUBECONFIG
+
+To retrieve the KUBECONFIG, do the following:
 
 `$ clusterctl get kubeconfig vsphere-quickstart > quickstart-kubeconfig`
 
@@ -54,6 +57,10 @@ $ kubectl config get-contexts --kubeconfig quickstart-kubeconfig
 CURRENT   NAME                                          CLUSTER              AUTHINFO                   NAMESPACE
 *         vsphere-quickstart-admin@vsphere-quickstart   vsphere-quickstart   vsphere-quickstart-admin
 ```
+
+## CNI 
+
+Remember to apply a CNI or the nodes will not become READY.
 
 `$ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml --kubeconfig quickstart-kubeconfig`
 
@@ -66,7 +73,9 @@ vsphere-quickstart-md-0-57ff99b55-q9xd4   Ready    <none>   7m19s   v1.18.6+vmwa
 vsphere-quickstart-md-0-57ff99b55-xd665   Ready    <none>   7m13s   v1.18.6+vmware.1   10.27.51.41   10.27.51.41   VMware Photon OS/Linux   4.19.132-1.ph3   containerd://1.3.4
 ```
 
-Cleanup. Start with workload, then CAPI stuff, then delete the KinD cluster
+## Cleanup
+
+Start with workload, then CAPI stuff, then delete the KinD cluster
 
 ```
 $ kubectl delete cluster vsphere-quickstart
