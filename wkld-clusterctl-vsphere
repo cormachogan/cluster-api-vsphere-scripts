@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+# More about the vSphere Cluster API project here:https://github.com/kubernetes-sigs/cluster-api-provider-vsphere/
+#
+
+# The username used to access the remote vSphere endpoint
+export VSPHERE_USERNAME="<set to your vCenter username>"
+
+# The password used to access the remote vSphere endpoint
+export VSPHERE_PASSWORD="<set to your vCenter password>"
+
+# The vCenter server IP or FQDN
+export VSPHERE_SERVER="<set to your vCenter IP address>"                                
+
+# The vSphere datacenter to deploy the management cluster on    
+export VSPHERE_DATACENTER="<set to your Datacenter>"                         
+
+# The vSphere datastore to deploy the management cluster on
+export VSPHERE_DATASTORE="<set to your datastore>"                         
+
+# The VM network to deploy the management cluster on
+export VSPHERE_NETWORK="VM Network"                                 
+
+# The vSphere resource pool for your VMs
+export VSPHERE_RESOURCE_POOL="*/Resources"                          
+
+# The VM folder for your VMs. Set to "" to use the root vSphere folder
+export VSPHERE_FOLDER="ClusterAPI"                                          
+
+# The VM template to use for your management cluster.
+export VSPHERE_TEMPLATE="photon-3-kube-v1.18.6+vmware.1"                  
+
+# The VM template to use for the HA Proxy
+export VSPHERE_HAPROXY_TEMPLATE="photon-3-haproxy-v1.2.4+vmware.1"
+
+# The IP that kube-vip is going to use as a control plane endpoint
+export CONTROL_PLANE_ENDPOINT_IP="<set to some free IP address>"                    
+
+# sha1 thumbprint of the vcenter certificate: openssl x509 -sha1 -fingerprint -in ca.crt -noout
+export VSPHERE_TLS_THUMBPRINT="AA:BB:CC:etc:Etc"
+
+# The public ssh authorized key on all machines
+export VSPHERE_SSH_AUTHORIZED_KEY="ssh-rsa blah blah"              
+
+# The Storage Policy to use for the node volumes
+export VSPHERE_STORAGE_POLICY="RAID1"
+
+# Overcome the rate limit for github api has been reached issue
+export GITHUB_TOKEN="tbd"
+
+# Now, create a  workload cluster (create manifest)
+clusterctl config cluster vsphere-quickstart --infrastructure vsphere --kubernetes-version v1.18.6 --control-plane-machine-count 1 --worker-machine-count 3 > cluster.yaml
+
+# Apply the workload cluster manifest
+kubectl apply -f cluster.yaml

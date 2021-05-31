@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+# More about the vSphere Cluster API project here:https://github.com/kubernetes-sigs/cluster-api-provider-vsphere/
+#
+# The username used to access the remote vSphere endpoint
+export VSPHERE_USERNAME="<Set to your vCenter username>"
+
+# The password used to access the remote vSphere endpoint
+export VSPHERE_PASSWORD="<Set to your vCenter password>"
+
+# This enables the ClusterResourceSet feature that we are using to deploy CSI -- EXPERIMENTAL (https://cluster-api.sigs.k8s.io/tasks/experimental-features/experimental-features.html)
+export EXP_CLUSTER_RESOURCE_SET="true"
+
+# Finally, initialize the management cluster
+clusterctl init --infrastructure vsphere
