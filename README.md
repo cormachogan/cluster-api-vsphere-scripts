@@ -6,19 +6,21 @@ These are the setup steps to use ClusterAPI (capi) on vSphere. We start off with
 
 Next, add the ClusterAPI bits to the KIND cluster. This requires a bunch of ENV vars to be setup as wel as the clusterctl binary installed
 
-> ./mgmt-clusterctl-vsphere
-> Fetching providers
-> Skipping installing cert-manager as it is already installed
-> Installing Provider="cluster-api" Version="v0.3.17" TargetNamespace="capi-system"
-> Installing Provider="bootstrap-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-bootstrap-system"
-> Installing Provider="control-plane-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-control-plane-system"
-> Installing Provider="infrastructure-vsphere" Version="v0.7.7" TargetNamespace="capv-system"
->
-> Your management cluster has been initialized successfully!
-> 
-> You can now create your first workload cluster by running the following:
->
->  clusterctl config cluster [name] --kubernetes-version [version] | kubectl apply -f -
+```yaml
+./mgmt-clusterctl-vsphere
+Fetching providers
+Skipping installing cert-manager as it is already installed
+Installing Provider="cluster-api" Version="v0.3.17" TargetNamespace="capi-system"
+Installing Provider="bootstrap-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-bootstrap-system"
+Installing Provider="control-plane-kubeadm" Version="v0.3.17" TargetNamespace="capi-kubeadm-control-plane-system"
+Installing Provider="infrastructure-vsphere" Version="v0.7.7" TargetNamespace="capv-system"
+
+Your management cluster has been initialized successfully!
+ 
+You can now create your first workload cluster by running the following:
+
+  clusterctl config cluster [name] --kubernetes-version [version] | kubectl apply -f -
+```
 
 Now you can create a workload cluster. Again, I have scripted it with loads of env vars
 
