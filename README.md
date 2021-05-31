@@ -77,7 +77,7 @@ vsphere-quickstart-md-0-57ff99b55-xd665   Ready    <none>   7m13s   v1.18.6+vmwa
 
 ## Cleanup
 
-Start with workload, then CAPI stuff, then delete the KinD cluster
+Start with the workload cluster, then remove the CAPI stuff fromt he management cluster, then finally delete the _kind_ cluster
 
 ```
 $ kubectl delete cluster vsphere-quickstart
