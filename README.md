@@ -4,7 +4,7 @@ These are the setup steps to use ClusterAPI (capi) on vSphere. We start off with
 
 `$ kind create cluster`
 
-This will create a simple Kubernetes cluster using containers. Next, download the *clusterctl* binary and use it to initialize the kind cluster for ClusterAPO. This _init_ steps adds the ClusterAPI bits to the kind cluster. This requires a bunch of ENV vars to be setup as wel as the clusterctl binary installed. See [mgmt_clusterctl_vsphere](./mgmt-clusterctl-vsphere).
+This will create a simple Kubernetes cluster using containers. Next, download the *clusterctl* binary and use it to initialize the kind cluster for ClusterAPO. This _init_ steps adds the ClusterAPI bits to the kind cluster. This requires a bunch of ENV vars to be setup as well as the *clusterctl* binary installed. See [mgmt_clusterctl_vsphere](./mgmt-clusterctl-vsphere).
 
 ```yaml
 ./mgmt-clusterctl-vsphere
