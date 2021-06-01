@@ -45,7 +45,7 @@ configmap/internal-feature-states.csi.vsphere.vmware.com created
 
 At this point, you should see the VMs to back the K8s nodes be provisioned in vSphere. There will also be a cluster manifest created called _cluster.yaml_. Examine this to see the range of K8s objects that are created. This manifest can also be used to delete the cluster, but Cluster API also provides a more elegant way to do this which we will see shortly. 
 
-Note that I had to create the folder in the vSphere inventory for this to happen (I think).
+Note that I had to create the folder in the vSphere inventory referenced in the environment variables or Cluster API will complain that the infrastructure is not ready.
 
 
 ## KUBECONFIG
